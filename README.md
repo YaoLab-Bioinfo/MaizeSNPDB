@@ -1,20 +1,20 @@
-maizeSNPDB
+MaizeSNPDB
 ========
 
 The genotypes of 1210 maize lines at 35,370,939 SNP sites are stored using Sparse Matrices in R.  
 
 *****
 
-#	Use maizeSNPDB online
+#	Use MaizeSNPDB online
 
-maizeSNPDB is deployed at <a href="http://150.109.59.144:3838/MaizeSNPDB/" target="_blank">http://150.109.59.144:3838/MaizeSNPDB/</a> for online use.  
-maizeSNPDB is idle until you activate it by accessing the URL. So it may take some time when you access this URL for the first time. Once it was activated, maizeSNPDB could be used smoothly and easily.  
+MaizeSNPDB is deployed at <a href="http://150.109.59.144:3838/MaizeSNPDB/" target="_blank">http://150.109.59.144:3838/MaizeSNPDB/</a> for online use.  
+MaizeSNPDB is idle until you activate it by accessing the URL. So it may take some time when you access this URL for the first time. Once it was activated, MaizeSNPDB could be used smoothly and easily.  
 
 *****
 
-#	<font color="red">Launch maizeSNPDB directly from R and GitHub (preferred approach)</font>
+#	<font color="red">Launch MaizeSNPDB directly from R and GitHub (preferred approach)</font>
 
-User can choose to run maizeSNPDB installed locally for a more preferable experience.
+User can choose to run MaizeSNPDB installed locally for a more preferable experience.
 
 **Step 1: Install R and RStudio**
 
@@ -22,7 +22,7 @@ Before running the app you will need to have R and RStudio installed (tested wit
 Please check CRAN (<a href="https://cran.r-project.org/" target="_blank">https://cran.r-project.org/</a>) for the installation of R.  
 Please check <a href="https://www.rstudio.com/" target="_blank">https://www.rstudio.com/</a> for the installation of RStudio.  
 
-**Step 2: Install the R Shiny package and other packages required by maizeSNPDB**
+**Step 2: Install the R Shiny package and other packages required by MaizeSNPDB**
 
 Start an R session using RStudio and run these lines:  
 ```
@@ -58,12 +58,12 @@ devtools::install_github("venyao/ShinySky")
 Start an R session using RStudio and run these lines:  
 ```
 library(shiny)  
-runGitHub("maizeSNPDB", "venyao", launch.browser = TRUE)  
+runGitHub("MaizeSNPDB", "venyao", launch.browser = TRUE)  
 ```
-This command would take some time as it will download the maizeSNPDB database from GitHub to the disk of your local computer (check the directory path using the function `getwd()` in R).   
+This command would take some time as it will download the MaizeSNPDB database from GitHub to the disk of your local computer (check the directory path using the function `getwd()` in R).   
 
 <br>
-Alternatively, you can download the maizeSNPDB database from Jianguoyun (https://www.jianguoyun.com/p/Dby8fCUQzqnhBRiv64UB) or GitHub (https://github.com/venyao/maizeSNPDB) to a directory (for example "E:/apps/") of your local computer using the web browser or other tools.   
+Alternatively, you can download the MaizeSNPDB database from Jianguoyun (https://www.jianguoyun.com/p/Dby8fCUQzqnhBRiv64UB) or GitHub (https://github.com/venyao/MaizeSNPDB) to a directory (for example "E:/apps/") of your local computer using the web browser or other tools.   
 
 <br>
 <img src="MaizeSNPDB.png" width="890"/>  
@@ -72,21 +72,21 @@ Alternatively, you can download the maizeSNPDB database from Jianguoyun (https:/
 Then start an R session using RStudio and run these lines:  
 ```
 library(shiny)  
-runApp("E:/apps/maizeSNPDB", launch.browser = TRUE)  
-# The first parameter of runApp should be the directory that contains the scripts server.R and ui.R of maizeSNPDB.  
+runApp("E:/apps/MaizeSNPDB", launch.browser = TRUE)  
+# The first parameter of runApp should be the directory that contains the scripts server.R and ui.R of MaizeSNPDB.  
 ```
 
 Your web browser will open the app.
 
 *****
 
-#	Deploy maizeSNPDB on local or web Linux server
+#	Deploy MaizeSNPDB on local or web Linux server
 
 **Step 1: Install R**  
 
 Please check CRAN (<a href="https://cran.r-project.org/" target="_blank">https://cran.r-project.org/</a>) for the installation of R.
 
-**Step 2: Install the R Shiny package and other packages required by maizeSNPDB**  
+**Step 2: Install the R Shiny package and other packages required by MaizeSNPDB**  
 
 Start an R session and run these lines in R:  
 ```
@@ -128,9 +128,9 @@ Please check the following pages for the installation of shiny-server.
 <a href="https://www.rstudio.com/products/shiny/download-server/" target="_blank">https://www.rstudio.com/products/shiny/download-server/</a>  
 <a href="https://github.com/rstudio/shiny-server/wiki/Building-Shiny-Server-from-Source" target="_blank">https://github.com/rstudio/shiny-server/wiki/Building-Shiny-Server-from-Source</a>  
 
-**Step 4: Upload files of maizeSNPDB**
+**Step 4: Upload files of MaizeSNPDB**
 
-Put the directory containing the code and data of maizeSNPDB to /srv/shiny-server.  
+Put the directory containing the code and data of MaizeSNPDB to /srv/shiny-server.  
 
 **Step 5: Configure shiny server (/etc/shiny-server/shiny-server.conf)**
 
@@ -144,18 +144,18 @@ server {
   listen 3838;  
   # Define the location available at the base URL  
   location /maizesnp {  
-    # Directory containing the code and data of maizeSNPDB  
-    app_dir /srv/shiny-server/maizeSNPDB;  
+    # Directory containing the code and data of MaizeSNPDB  
+    app_dir /srv/shiny-server/MaizeSNPDB;  
     # Directory to store the log files  
     log_dir /var/log/shiny-server;  
   }  
 }  
 ```
 
-**Step 6: Change the owner of the maizeSNPDB directory**
+**Step 6: Change the owner of the MaizeSNPDB directory**
 
 ```
-$ chown -R shiny /srv/shiny-server/maizeSNPDB  
+$ chown -R shiny /srv/shiny-server/MaizeSNPDB  
 ```
 
 **Step 7: Start Shiny-Server**
@@ -164,6 +164,6 @@ $ chown -R shiny /srv/shiny-server/maizeSNPDB
 $ start shiny-server  
 ```
 
-Now, the maizeSNPDB app is available at http://IPAddressOfTheServer:3838/maizeSNPDB/.  
+Now, the MaizeSNPDB app is available at http://IPAddressOfTheServer:3838/MaizeSNPDB/.  
 
 
