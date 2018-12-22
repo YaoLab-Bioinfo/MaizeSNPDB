@@ -48,8 +48,8 @@ biocLite("ggtree")
 # try an http CRAN mirror if https CRAN mirror doesn't work  
 install.packages("LDheatmap")
 # install shinysky  
-if (require(devtools)) install.packages("devtools")  
-devtools::install_github("venyao/ShinySky")  
+install.packages("devtools")  
+devtools::install_github("venyao/ShinySky", force=TRUE)  
 ```
 
 **Step 3: Start the app**  
@@ -59,11 +59,9 @@ Start an R session using RStudio and run these lines:
 library(shiny)  
 runGitHub("MaizeSNPDB", "venyao", launch.browser = TRUE)  
 ```
-This command would take some time as it will download the MaizeSNPDB database from GitHub to the disk of your local computer (check the directory path using the function `getwd()` in R).   
+This command will download the code of MaizeSNPDB from GitHub to a temporary directory of your computer and then launch the MaizeSNPDB app in the web browser. Once the web browser was closed, the downloaded code of MaizeSNPDB would be deleted from your computer. Next time when you run this command in RStudio, it will download the source code of MaizeSNPDB from GitHub to a temporary directory again. This process is frustrating since it takes some time to download the code of MaizeSNPDB from GitHub.  
 
-<br>
-Alternatively, you can download the MaizeSNPDB database from Jianguoyun (https://www.jianguoyun.com/p/Dby8fCUQzqnhBRiv64UB) or GitHub (https://github.com/venyao/MaizeSNPDB) to a directory (for example "E:/apps/") of your local computer using the web browser or other tools.   
-
+Users are suggested to download the source code of MaizeSNPDB from Jianguoyun (https://www.jianguoyun.com/p/Dby8fCUQzqnhBRiv64UB) or GitHub (https://github.com/venyao/MaizeSNPDB) to a fixed directory of your computer, such as “E:\apps” on Windows. Following the procedure illustrated in the following figure, a zip file named “MaizeSNPDB-master.zip” (GitHub) or “MaizeSNPDB.zip” (Jianguoyun) would be downloaded to the disk of your computer. Move this file to “E:\apps” and unzip this file. Then a directory named “MaizeSNPDB-master” or “MaizeSNPDB” would be generated in “E:\apps”. The scripts “server.R” and “ui.R” could be found in “E:\apps\MaizeSNPDB-master” or “E:\apps\MaizeSNPDB”.  
 <br>
 <img src="MaizeSNPDB.png" width="890"/>  
 <br>
@@ -71,7 +69,8 @@ Alternatively, you can download the MaizeSNPDB database from Jianguoyun (https:/
 Then start an R session using RStudio and run these lines:  
 ```
 library(shiny)  
-runApp("E:/apps/MaizeSNPDB", launch.browser = TRUE)  
+runApp("E:/apps/MaizeSNPDB-master", launch.browser = TRUE)  # from GitHub
+runApp("E:/apps/MaizeSNPDB", launch.browser = TRUE)   # from Jianguoyun
 # The first parameter of runApp should be the directory that contains the scripts server.R and ui.R of MaizeSNPDB.  
 ```
 
@@ -111,8 +110,8 @@ biocLite("ggtree")
 # try an http CRAN mirror if https CRAN mirror doesn't work  
 install.packages("LDheatmap")  
 # install shinysky  
-if (require(devtools)) install.packages("devtools")  
-devtools::install_github("venyao/ShinySky")  
+install.packages("devtools")  
+devtools::install_github("venyao/ShinySky", force=TRUE)  
 ```
 
 For more information, please check the following pages:  
