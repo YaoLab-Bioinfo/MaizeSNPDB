@@ -373,6 +373,11 @@ shinyServer(function(input, output, session) {
 	        }, height = div.height, width = div.width)
 	        
 	        ## Download PDF file of Diversity
+	        output$downloadDiv01 <- renderUI({
+	          req(input$submit4, nuc.div.plot)
+	          downloadButton("downloadDiv.pdf", "Download pdf-file")
+	        })
+	        
 	        output$downloadDiv.pdf <- downloadHandler(
 	          filename <- function() { paste('diversity.pdf') },
 	          content <- function(file) {
@@ -383,6 +388,11 @@ shinyServer(function(input, output, session) {
 	          }, contentType = 'application/pdf')
 	        
 	        ## Download SVG file of Diversity
+	        output$downloadDiv02 <- renderUI({
+	          req(input$submit4, nuc.div.plot)
+	          downloadButton("downloadDiv.svg", "Download svg-file")
+	        })
+	        
 	        output$downloadDiv.svg <- downloadHandler(
 	          filename <- function() { paste('diversity.svg') },
 	          content <- function(file) {
@@ -401,6 +411,11 @@ shinyServer(function(input, output, session) {
 	})
 	
 	## Download TXT file of diversity
+	output$downloadDiv03 <- renderUI({
+	  req(input$submit4)
+	  downloadButton("downloadDiv.txt", "Download TXT-file")
+	})
+	
 	output$downloadDiv.txt <- downloadHandler(
 	  filename <- function() { paste('diversity.txt') },
 	  content <- function(file) {
@@ -459,6 +474,11 @@ shinyServer(function(input, output, session) {
 	})
 	
 	## Download PDF file of phylogenetics
+	output$downloadPhy01 <- renderUI({
+	  req(input$submit5)
+	  downloadButton("downloadPhylo.pdf", "Download pdf-file")
+	})
+	
 	output$downloadPhylo.pdf <- downloadHandler(
 	  filename <- function() { paste('phylogenetics.pdf') },
 	  content <- function(file) {
@@ -468,6 +488,11 @@ shinyServer(function(input, output, session) {
 	  }, contentType = 'application/pdf')
 	
 	## Download NWK file of phylogenetics
+	output$downloadPhy02 <- renderUI({
+	  req(input$submit5)
+	  downloadButton("downloadPhylo.nwk", "Download Newick-file")
+	})
+	
 	output$downloadPhylo.nwk <- downloadHandler(
 	  filename <- function() { paste('phylogenetics.nwk') },
 	  content <- function(file) {
