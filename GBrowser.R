@@ -1,4 +1,12 @@
 
+# A function for visualization of SNP sites in a specified genomic region.
+# Change to the directory of MaizeSNPDB using the setwd function of R.
+# Usage: type the next two lines in R Console without the leading #
+# source("Global.R")
+# snp.plot <- GBrowser(chr="chr7", start=29506705, end=29659223, accession=NULL, mutType=NULL)
+# To visualization the SNP sites in static mode, type snp.plot[[1]] in R console.
+# To visualization the SNP sites in interacitve mode, type snp.plot[[2]] in R console.
+# For more info, please check the Browser menu of the MaizeSNPDB database.
 
 GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, mutType=NULL) {
   start <- as.numeric(start)

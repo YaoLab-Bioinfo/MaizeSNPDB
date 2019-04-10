@@ -1,4 +1,12 @@
 
+# A function to perform phylogenetic analysis using SNP data in a specified genomic region.
+# Change to the directory of MaizeSNPDB using the setwd function of R.
+# Usage: type the next three lines in R Console without the leading #
+# source("Global.R")
+# phy.plot <- phylo(chr="chr9", start=37800, end=41400, accession=NULL, mutType=NULL, snpSites = NULL)
+# print(phy.plot)
+# Then the NJ tree would be displayed in a plotting device.
+# For more info, please check the Phylogenetic menu of the MaizeSNPDB database.
 
 phylo <- function(chr="chr9", start=37800, end=41400, accession=NULL, mutType=NULL, snpSites = NULL) {
   start <- as.numeric(start)
@@ -50,7 +58,7 @@ phylo <- function(chr="chr9", start=37800, end=41400, accession=NULL, mutType=NU
   })
   dat.res <- dat.res[dat.res.row.c>1, , drop=FALSE]
   
-  if (!is.null(mutType) && length(mutType)>=1) {
+  if (!is.null(mutType) && length(mutType)>=1 && length(mutType)!=16) {
     snpeff.info <- snpeff[snpeff[, 1] %in% rownames(dat.res),]
     
     snpeff.info[,"eff"][grepl("IT", snpeff.info[,"eff"])] <- "Intergenic"

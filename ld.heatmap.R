@@ -1,4 +1,11 @@
 
+# A function to create the linakge disequilibrium heatmap using SNP data in a specified genomic region.
+# Change to the directory of MaizeSNPDB using the setwd function of R.
+# Usage: type the next two lines in R Console without the leading #
+# source("Global.R")
+# ld.plot <- ld.heatmap(chr="chr9", start=37800, end=40400, snp.pos=c(1), gene=FALSE, ld.y=0.64, ld.w=0.80, flip=FALSE, accession=NULL, mutType=NULL, snpSites = NULL)
+# Then the linakge disequilibrium heatmap of this region would be displayed in a plotting device.
+# For more info, please check the LDheatmap menu of the MaizeSNPDB database.
 
 ld.heatmap <- function(chr="chr9", start=37800, end=40400, snp.pos=c(1), 
                        gene=FALSE, ld.y=0.64, ld.w=0.80, flip=FALSE, accession=NULL, 

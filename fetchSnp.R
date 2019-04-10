@@ -1,4 +1,10 @@
 
+# A function to extract SNP data in a specified genomic region.
+# Change to the directory of MaizeSNPDB using the setwd function of R.
+# Usage: type the next two lines in R Console without the leading #
+# source("Global.R")
+# snp.data <- fetchSnp(chr="chr7", start=29616705, end=29629223, accession=c("Landrace", "Parviglumis"), mutType=NULL)
+# The output snp.data is a list with three elements: the genotype matrix, the allele matrix and the effects of SNPs
 
 fetchSnp <- function(chr="chr7", start=29616705, end=29629223, accession=NULL, mutType=NULL){
   
