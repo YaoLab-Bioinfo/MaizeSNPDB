@@ -544,6 +544,13 @@ shinyServer(function(input, output, session) {
 	}, options = list(lengthMenu = c(5, 8, 10), pageLength = 5, searching = TRUE, autoWidth = FALSE), escape = FALSE
 	)
 	
+	output$mytable3 = renderDataTable({
+	  geneID <- read.table("maize.v3TOv4.geneIDhistory.txt", head=T, as.is=T)
+	  
+	  geneID
+	}, options = list(lengthMenu = c(10, 20, 30, 40), pageLength = 15, searching = TRUE, autoWidth = FALSE), escape = FALSE
+	)
+	
 	# Bulk download genotypes of seleceted SNPs
 	observe({
 	  if (input$submit6>0) {

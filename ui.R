@@ -412,8 +412,8 @@ shinyUI(
         radioButtons("uploadPHY", h4("SNP sites to be retained:",
                                      bsButton("qp2", label="", icon=icon("question"), style="info", size="small")), 
                      c("ALL" = "1", "Upload SNP sites file" = "2"), "1"),
-bsPopover("qp2", "A text file with SNP IDs (one ID per row) could be uploaded to screen the SNPs used in the analysis. Or else, all the SNPs in the specifid genomic region will be used.",
-          trigger = "focus"),
+        bsPopover("qp2", "A text file with SNP IDs (one ID per row) could be uploaded to screen the SNPs used in the analysis. Or else, all the SNPs in the specifid genomic region will be used.",
+                  trigger = "focus"),
         conditionalPanel(condition="input.uploadPHY == '2'",
                  fileInput("PHY.snpsite", NULL, multiple = FALSE)),
 
@@ -548,6 +548,16 @@ bsPopover("qp2", "A text file with SNP IDs (one ID per row) could be uploaded to
         withSpinner(dataTableOutput("mytable2"))
         
       )
+    ),
+
+    # GeneIDConversion
+    tabPanel(
+       "GeneIDConversion",
+  
+       mainPanel(
+         h4("Gene ID in maize B73 genome annotations version 3 and version 4:"),
+         dataTableOutput("mytable3")
+       )
     ),
 
   ## Help
