@@ -16,10 +16,15 @@ shinyServer(function(input, output, session) {
           myPos <- NULL
         }
         
-        snp.info <- snpInfo(chr=myPos$chr, start=myPos$start - input$GBUP, end=myPos$end + input$GBDOWN, 
-                            accession = input$mychooserB$selected, mutType = input$GB_mut_group)
-        if (nrow(snp.info[[1]][[1]]) < 1) {
-          js_string <- 'alert("No SNPs in specified genomic region!");'
+        if (!is.null(myPos)) {
+          snp.info <- snpInfo(chr=myPos$chr, start=myPos$start - input$GBUP, end=myPos$end + input$GBDOWN, 
+                              accession = input$mychooserB$selected, mutType = input$GB_mut_group)
+        } else {
+          snp.info <- NULL
+        }
+        
+        if (is.null(snp.info) || nrow(snp.info[[1]][[1]]) < 1) {
+          js_string <- 'alert("No SNPs are detected in the specified genomic region or the specified genomic region is too large!");'
           session$sendCustomMessage(type='jsCode', list(value = js_string))
         } else {
           GBplot <<- NULL
@@ -116,11 +121,16 @@ shinyServer(function(input, output, session) {
           myPos <- NULL
         }
         
-        snp.reg <- fetchSnp(chr=myPos$chr, start=myPos$start - input$ldUp * 1000, 
-                            end=myPos$end + input$ldDown * 1000, accession = input$mychooserLD$selected,
-                            mutType = input$ld_mut_group)[[1]]
-        if (nrow(snp.reg) < 5) {
-          js_string <- 'alert("Too few SNPs in specified genomic region!");'
+        if (!is.null(myPos)) {
+          snp.reg <- fetchSnp(chr=myPos$chr, start=myPos$start - input$ldUp * 1000, 
+                              end=myPos$end + input$ldDown * 1000, accession = input$mychooserLD$selected,
+                              mutType = input$ld_mut_group)[[1]]
+        } else {
+          snp.reg <- NULL
+        }
+        
+        if (is.null(snp.reg) || nrow(snp.reg) < 5) {
+          js_string <- 'alert("No SNPs are detected in the specified genomic region or the specified genomic region is too large!");'
           session$sendCustomMessage(type='jsCode', list(value = js_string))
         } else {
           snp.pos <- as.numeric(unlist(strsplit(input$ldpos, split=",")))
@@ -356,11 +366,15 @@ shinyServer(function(input, output, session) {
 	        }
 	      }
 	      
-	      snp.reg <- fetchSnp(chr=myPos$chr, start=myPos$start - div.up, end=myPos$end + div.down,
-	                          mutType=input$div_mut_group)[[1]]
+	      if (!is.null(myPos)) {
+	        snp.reg <- fetchSnp(chr=myPos$chr, start=myPos$start - div.up, end=myPos$end + div.down,
+	                            mutType=input$div_mut_group)[[1]]
+	      } else {
+	        snp.reg <- NULL
+	      }
 	      
-	      if (nrow(snp.reg) < 10) {
-	        js_string <- 'alert("Too few SNPs in specified genomic region!");'
+	      if (is.null(snp.reg) || nrow(snp.reg) < 10) {
+	        js_string <- 'alert("No SNPs are detected in the specified genomic region or the specified genomic region is too large!");'
 	        session$sendCustomMessage(type='jsCode', list(value = js_string))
 	      } else {
 	        nuc.div.plot <<- NULL
@@ -402,6 +416,19 @@ shinyServer(function(input, output, session) {
 	            dev.off()
 	          }, contentType = 'image/svg')
 	        
+	        ## Download TXT file of diversity
+	        output$downloadDiv03 <- renderUI({
+	          req(input$submit4)
+	          downloadButton("downloadDiv.txt", "Download TXT-file")
+	        })
+	        
+	        output$downloadDiv.txt <- downloadHandler(
+	          filename <- function() { paste('diversity.txt') },
+	          content <- function(file) {
+	            write.table(diVTxt, file, sep="\t", quote=F, row.names = F)
+	          }, contentType = 'text/plain')
+	        
+	        
 	      }
 	      
 	    })
@@ -410,18 +437,7 @@ shinyServer(function(input, output, session) {
 	  }
 	})
 	
-	## Download TXT file of diversity
-	output$downloadDiv03 <- renderUI({
-	  req(input$submit4)
-	  downloadButton("downloadDiv.txt", "Download TXT-file")
-	})
-	
-	output$downloadDiv.txt <- downloadHandler(
-	  filename <- function() { paste('diversity.txt') },
-	  content <- function(file) {
-	    write.table(diVTxt, file, sep="\t", quote=F, row.names = F)
-	  }, contentType = 'text/plain')
-	
+
 	
 	# phylogenetics
 	observe({
@@ -454,17 +470,47 @@ shinyServer(function(input, output, session) {
 	        }
 	      }
 	      
-	      snp.reg <- fetchSnp(chr=myPos$chr, start=myPos$start - phy.up, end=myPos$end + phy.down,
-	                          accession=phy.acc, mutType=phy.mut.group)[[1]]
+	      if (!is.null(myPos)) {
+	        snp.reg <- fetchSnp(chr=myPos$chr, start=myPos$start - phy.up, end=myPos$end + phy.down,
+	                            accession=phy.acc, mutType=phy.mut.group)[[1]]
+	      } else {
+	        snp.reg <- NULL
+	      }
 	      
-	      if (nrow(snp.reg) < 10) {
-	        js_string <- 'alert("Too few SNPs in specified genomic region!");'
+	      if (is.null(snp.reg) || nrow(snp.reg) < 10) {
+	        js_string <- 'alert("No SNPs are detected in the specified genomic region or the specified genomic region is too large!");'
 	        session$sendCustomMessage(type='jsCode', list(value = js_string))
 	      } else {
 	        output$phylo <- renderPlot({
 	            phylo(chr=myPos$chr, start=myPos$start-phy.up, end=myPos$end+phy.down,
 	                  accession=phy.acc, mutType=phy.mut.group, snpSites = phy.snp.site)
 	        }, height = phy.height, width = phy.width)
+	        
+	        ## Download PDF file of phylogenetics
+	        output$downloadPhy01 <- renderUI({
+	          req(input$submit5)
+	          downloadButton("downloadPhylo.pdf", "Download pdf-file")
+	        })
+	        
+	        output$downloadPhylo.pdf <- downloadHandler(
+	          filename <- function() { paste('phylogenetics.pdf') },
+	          content <- function(file) {
+	            pdf(file, width = input$phyWidth/72, height = input$phyHeight/72)
+	            print(figurecp)
+	            dev.off()
+	          }, contentType = 'application/pdf')
+	        
+	        ## Download NWK file of phylogenetics
+	        output$downloadPhy02 <- renderUI({
+	          req(input$submit5)
+	          downloadButton("downloadPhylo.nwk", "Download Newick-file")
+	        })
+	        
+	        output$downloadPhylo.nwk <- downloadHandler(
+	          filename <- function() { paste('phylogenetics.nwk') },
+	          content <- function(file) {
+	            write.tree(treNwk, file)
+	          }, contentType = 'text/plain')
 	      }
 	      
 	    })
@@ -473,32 +519,7 @@ shinyServer(function(input, output, session) {
 	  }
 	})
 	
-	## Download PDF file of phylogenetics
-	output$downloadPhy01 <- renderUI({
-	  req(input$submit5)
-	  downloadButton("downloadPhylo.pdf", "Download pdf-file")
-	})
 	
-	output$downloadPhylo.pdf <- downloadHandler(
-	  filename <- function() { paste('phylogenetics.pdf') },
-	  content <- function(file) {
-	    pdf(file, width = input$phyWidth/72, height = input$phyHeight/72)
-	    print(figurecp)
-	    dev.off()
-	  }, contentType = 'application/pdf')
-	
-	## Download NWK file of phylogenetics
-	output$downloadPhy02 <- renderUI({
-	  req(input$submit5)
-	  downloadButton("downloadPhylo.nwk", "Download Newick-file")
-	})
-	
-	output$downloadPhylo.nwk <- downloadHandler(
-	  filename <- function() { paste('phylogenetics.nwk') },
-	  content <- function(file) {
-	    write.tree(treNwk, file)
-	  }, contentType = 'text/plain')
-  
 	# accession information
 	output$acc.info.txt <- downloadHandler(
 	  filename = function() { "acc.info.txt" },
@@ -566,34 +587,37 @@ shinyServer(function(input, output, session) {
 	      
 	      snp.info.down <<- NULL
 	      
-	      output$mytable2 = renderDataTable({
-	        snp.info.down <<- snpInfo(chr=myPos$chr, start=myPos$start, end=myPos$end, 
-	                                  accession = input$mychooserD$selected, mutType = input$down_mut_group)
-	        snp.info.down[[2]]
-	      }, options = list(lengthMenu = c(5, 8, 10), pageLength = 5, searching = TRUE, autoWidth = TRUE), escape = FALSE
-	      )
-	      
-	      
-	      output$bulkdownloadsnp.txt <- downloadHandler(
-	        filename = function() { "down.snp.geno.txt" },
-	        content = function(file) {
-	          write.table(snp.info.down[[1]][[1]], file, sep="\t", quote=F)
-	        })
-	      
-	      # Bulk download information of SNPs
-	      output$bulkdownloadsnpInfo.txt <- downloadHandler(
-	        filename = function() { "down.snp.info.txt" },
-	        content = function(file) {
-	          write.table(snp.info.down[[2]], file, sep="\t", quote=F, row.names=F)
-	        })
-	      
-	      # Bulk download gene annotation
-	      output$bulkdownloadgene.txt <- downloadHandler(
-	        filename = function() { "down.gene.info.txt" },
-	        content = function(file) {
-	          gene.info <- gff[gff$chr==myPos$chr & gff$start>=myPos$start & gff$end<=myPos$end, ]
-	          write.table(gene.info, file, sep="\t", quote=F, row.names=F)
-	        })
+	      if (!is.null(myPos)) {
+	        output$mytable2 = renderDataTable({
+	          snp.info.down <<- snpInfo(chr=myPos$chr, start=myPos$start, end=myPos$end, 
+	                                    accession = input$mychooserD$selected, mutType = input$down_mut_group)
+	          snp.info.down[[2]]
+	        }, options = list(lengthMenu = c(5, 8, 10), pageLength = 5, searching = TRUE, autoWidth = TRUE), escape = FALSE
+	        )
+	        
+	        output$bulkdownloadsnp.txt <- downloadHandler(
+	          filename = function() { "down.snp.geno.txt" },
+	          content = function(file) {
+	            write.table(snp.info.down[[1]][[1]], file, sep="\t", quote=F)
+	          })
+	        
+	        # Bulk download information of SNPs
+	        output$bulkdownloadsnpInfo.txt <- downloadHandler(
+	          filename = function() { "down.snp.info.txt" },
+	          content = function(file) {
+	            write.table(snp.info.down[[2]], file, sep="\t", quote=F, row.names=F)
+	          })
+	        
+	        # Bulk download gene annotation
+	        output$bulkdownloadgene.txt <- downloadHandler(
+	          filename = function() { "down.gene.info.txt" },
+	          content = function(file) {
+	            gene.info <- gff[gff$chr==myPos$chr & gff$start>=myPos$start & gff$end<=myPos$end, ]
+	            write.table(gene.info, file, sep="\t", quote=F, row.names=F)
+	          })
+	      } else {
+	        NULL
+	      }
 	      
 	    })
 	  } else {
