@@ -1,9 +1,9 @@
 
-This R script **chara-2-sparse.R** is used to convert a traditional **character genotype matrix** into an **integer sparse genotype matrix**.  
-This R script can be used in the system command line with R installed in the system or be used in the R enviroment.  
+This R script **chara-2-sparse.R** is used to convert a traditional **character genotype matrix** into an **integer sparse genotype matrix**. This R script can be used in the system command line with R installed in the system or be used in the R enviroment.  
 
 **test.snp.RData** is the input data to this R script. test.snp.RData is an R data file contained the genotype data of 1210 maize lines across 1000 SNP sites in character matrix. The content of this R data can be viewed in the R enviroment as shown below.  
 ``` R code
+load("test.snp.RData")
 ls()
 # [1] "snp.data"
 dim(snp.data)
@@ -17,11 +17,12 @@ snp.data[1:5, 1:5]
 # 07180000017 "H" "A" "A" "G" "A"
 ```
 
-We then run this R script using **test.snp.RData** as the input data using the following command in the system command line.  
+We then run this R script with **test.snp.RData** as the input data using the following command in the system command line.  
 **R --slave --args test.snp.RData <chara-2-sparse.R**
 
-After running the R script, a new R data file named as **test.snp.Mat.RData** would be generated in the same directory. This R data file contained the genotype data of 1210 maize lines across 1000 SNP sites in integer sparse matrix. The content of this R data can be viewed in the R enviroment as shown below.  
+After running the R script, a new R data file named as **test.snp.Mat.RData** would be generated in the same directory. This R data file contained the genotype data of 1210 maize lines across 1000 SNP sites in integer sparse matrix, which can be used to build the genotype database demonstrate in the **MaizeSNPDB** database. The content of this R data can be viewed in the R enviroment as shown below.  
 ``` R code
+load("test.snp.Mat.RData")
 ls()
 # [1] "snp.data.allele"       "snp.data.inter.Matrix"
 head(snp.data.allele)
