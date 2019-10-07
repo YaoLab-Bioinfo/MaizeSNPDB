@@ -556,7 +556,8 @@ shinyUI(
   
        mainPanel(
          h4("Gene ID in maize B73 genome annotations version 3 and version 4:"),
-         dataTableOutput("mytable3")
+         dataTableOutput("mytable3"),
+		 h5("Note: The dataset used in this functionality is from MaizeGDB (https://maizegdb.org/).")
        )
     ),
 
