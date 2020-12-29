@@ -56,81 +56,87 @@ shinyUI(
                                tags$td(style = "width: 60%",
                                        textInput("regB", label = h5("Genomic region:",
                                                                     bsButton("q6", label="", icon=icon("question"), style="info", size="small")),
-                                                 value = "chr1:29765419-29793053"),
+                                                 value = ""),
                                        
                                        bsPopover("q6", "A genomic region can be determined by chromosome positions or gene locus. For example, chr7:29506705-29659223 or Zm00001d003489.",
                                                  trigger = "focus")
                                ), #/ column 1
                                tags$td(style = "width: 40%; text-align: right",
                                          div(class = "form-group shiny-input-container",
-                                               actionButton("submit1", strong("Go!",
+                                               actionButton("submit1", strong("Submit!",
                                                                               bsButton("q7", label="", icon=icon("question"), style="info", size="small")
                                                             ), width = "90%", styleclass = "success"),
-                                             bsPopover("q7", "Whenever the genomic region is updated, please click Go!",
+                                             conditionalPanel(condition="input.submit1 != '0'", busyIndicator(HTML("<div style='color:red;font-size:30px'>Calculation In progress...</div>"), wait = 0)),
+                                             bsPopover("q7", "Whenever the genomic region is updated, please click Submit!",
                                                        trigger = "focus")
                                          )
-                               ) #/ column 2
+                               ), #/ column 2
+                               tags$td(style = "width: 40%; text-align: right",
+                                       div(class = "form-group shiny-input-container",
+                                           actionButton("clearGB", strong("Reset"), styleclass = "warning"),
+                                           actionButton("GBExam", strong("Load example"), styleclass = "info")
+                                       )
+                               )
                              ) #/ tr
                 ) #/ table
       )),
       
 #      br(),
+
+fluidRow(
+  column(3,
+         sliderInput("GBUP", h4("Upstream:",
+                                bsButton("qg2", label="", icon=icon("question"), style="info", size="small")
+         ), min = 0, max = 50000, value = 0, ticks = FALSE),
+         bsPopover("qg2", "SNPs in the upstream of the specified genomic region will be used.",
+                   trigger = "focus"),
+         sliderInput("GBDOWN", h4("Downstream:",
+                                  bsButton("qg4", label="", icon=icon("question"), style="info", size="small")
+         ), min = 0, max = 50000, value = 0, ticks = FALSE),
+         bsPopover("qg4", "SNPs in the downstream of the specified genomic region will be used.",
+                   trigger = "focus")
+  ),
+  
+  column(4,
+         p(h4("Select maize lines:",
+              bsButton("qg3", label="", icon=icon("question"), style="info", size="small"))),
+         bsPopover("qg3", "Only the chosen maize lines will be used.",
+                   trigger = "focus"),
+         
+         chooserInput("mychooserB", "Available frobs", "Selected frobs", c(),
+                      all.acc.cho, size = 10, multiple = TRUE)
+  ),
+  
+  column(5,
+         tags$div(align = 'left',
+                  class = 'multicol', style = "width: 100%",
+                  checkboxGroupInput("GB_mut_group", h4("Mutation types:",
+                                                        bsButton("qg1", label="", icon=icon("question"), style="info", size="small")),
+                                     choices = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
+                                                 "Intron", "Upstream", "Downstream", "Intergenic",
+                                                 "five_prime_UTR","three_prime_UTR",
+                                                 "Non_synonymous_start","Non_synonymous_coding",
+                                                 "Splice_site_acceptor","Splice_site_donor",
+                                                 "Synonymous_stop","Synonymous_coding"
+                                     ),
+                                     selected = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
+                                                  "Intron", "Upstream", "Downstream", "Intergenic",
+                                                  "five_prime_UTR","three_prime_UTR",
+                                                  "Non_synonymous_start","Non_synonymous_coding",
+                                                  "Splice_site_acceptor","Splice_site_donor",
+                                                  "Synonymous_stop","Synonymous_coding"
+                                     )),
+                  bsPopover("qg1", "Only SNPs with selected mutation effects will be used.",
+                            trigger = "focus")
+         )
+  )
+),
       
       downloadButton("downloadsnp.txt", "Download genotype data"),
       downloadButton("downloadsnpInfo.txt", "Download SNPs information"),
       downloadButton("downloadGB.pdf", "Download pdf-file"),
       
-      withSpinner(plotlyOutput("gbrowser", height = '100%', width = '100%')),
-      
-      fluidRow(
-        column(3,
-               sliderInput("GBUP", h4("Upstream:",
-                                      bsButton("qg2", label="", icon=icon("question"), style="info", size="small")
-                                      ), min = 0, max = 50000, value = 0, ticks = FALSE),
-               bsPopover("qg2", "SNPs in the upstream of the specified genomic region will be used.",
-                         trigger = "focus"),
-               sliderInput("GBDOWN", h4("Downstream:",
-                                        bsButton("qg4", label="", icon=icon("question"), style="info", size="small")
-                                        ), min = 0, max = 50000, value = 0, ticks = FALSE),
-               bsPopover("qg4", "SNPs in the downstream of the specified genomic region will be used.",
-                         trigger = "focus")
-        ),
-        
-        column(4,
-               p(h4("Select maize lines:",
-                    bsButton("qg3", label="", icon=icon("question"), style="info", size="small"))),
-               bsPopover("qg3", "Only the chosen maize lines will be used.",
-                         trigger = "focus"),
-               
-               chooserInput("mychooserB", "Available frobs", "Selected frobs", c(),
-                            all.acc.cho, size = 10, multiple = TRUE)
-        ),
-        
-        column(5,
-               tags$div(align = 'left',
-                        class = 'multicol', style = "width: 100%",
-                        checkboxGroupInput("GB_mut_group", h4("Mutation types:",
-                                                              bsButton("qg1", label="", icon=icon("question"), style="info", size="small")),
-                                           choices = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
-                                                       "Intron", "Upstream", "Downstream", "Intergenic",
-                                                       "five_prime_UTR","three_prime_UTR",
-                                                       "Non_synonymous_start","Non_synonymous_coding",
-                                                       "Splice_site_acceptor","Splice_site_donor",
-                                                       "Synonymous_stop","Synonymous_coding"
-                                                       ),
-                                           selected = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
-                                                        "Intron", "Upstream", "Downstream", "Intergenic",
-                                                        "five_prime_UTR","three_prime_UTR",
-                                                        "Non_synonymous_start","Non_synonymous_coding",
-                                                        "Splice_site_acceptor","Splice_site_donor",
-                                                        "Synonymous_stop","Synonymous_coding"
-                                           )),
-                        bsPopover("qg1", "Only SNPs with selected mutation effects will be used.",
-                                  trigger = "focus")
-               )
-        )
-      ),
-      
+      plotlyOutput("gbrowser", height = '100%', width = '100%'),
       br()
       
     ),
@@ -142,15 +148,18 @@ shinyUI(
       sidebarPanel(
         textInput("regL", label = h5("Genomic region:",
                                      bsButton("q5", label="", icon=icon("question"), style="info", size="small")),
-                  value = "Zm00001d033673"),
+                  value = ""),
         
         bsPopover("q5", "A genomic region can be determined by chromosome positions or gene locus. For example, chr7:29506705-29659223 or Zm00001d003489.",
                   trigger = "focus"),
         
-        actionButton("submit2", strong("Go!",
+        actionButton("submit2", strong("Submit!",
                                        bsButton("q8", label="", icon=icon("question"), style="info", size="small")
         ), styleclass = "success"),
-        bsPopover("q8", "Whenever the genomic region is updated, please click Go!",
+        actionButton("clearLD", strong("Reset"), styleclass = "warning"),
+        actionButton("LDExam", strong("Load example"), styleclass = "info"),
+        conditionalPanel(condition="input.submit2 != '0'", busyIndicator(HTML("<div style='color:red;font-size:30px'>Calculation In progress...</div>"), wait = 0)),
+        bsPopover("q8", "Whenever the genomic region is updated, please click Submit!",
                   trigger = "focus"),
         
         br(),
@@ -239,7 +248,7 @@ shinyUI(
       mainPanel(
         downloadButton("downloadLD.pdf", "Download pdf-file"),
         downloadButton("downloadLD.svg", "Download svg-file"),
-        withSpinner((plotOutput("ldheatmap", height = '100%', width = '100%')))
+        plotOutput("ldheatmap", height = '100%', width = '100%')
         
       )
     ),
@@ -252,9 +261,18 @@ shinyUI(
       sidebarPanel(
         textInput("regD", label = h5("Genomic region:",
                                      bsButton("q3", label="", icon=icon("question"), style="info", size="small")),
-                  value = "Zm00001d033673"),
+                  value = ""),
         
         bsPopover("q3", "A genomic region can be determined by chromosome positions or gene locus. For example, chr7:29506705-29659223 or Zm00001d003489.",
+                  trigger = "focus"),
+        
+        actionButton("submit4", strong("Submit!",
+                                       bsButton("q10", label="", icon=icon("question"), style="info", size="small")
+        ), styleclass = "success"),
+        actionButton("clearDiv", strong("Reset"), styleclass = "warning"),
+        actionButton("DivExam", strong("Load example"), styleclass = "info"),
+        conditionalPanel(condition="input.submit4 != '0'", busyIndicator(HTML("<div style='color:red;font-size:30px'>Calculation In progress...</div>"), wait = 0)),
+        bsPopover("q10", "Whenever the genomic region or any option is updated, please click Submit!!",
                   trigger = "focus"),
         
         HTML("<h4><font color='red'>Plot options</font></h4>"),
@@ -328,14 +346,7 @@ shinyUI(
           condition = "input.divSize",
           numericInput("divHeight", "Plot height:", value = 550),
           numericInput("divWidth", "Plot width:", value = 750)
-        ),
-
-        actionButton("submit4", strong("Go!",
-                               bsButton("q10", label="", icon=icon("question"), style="info", size="small")
-        ), styleclass = "success"),
-        conditionalPanel(condition="input.submit4 != '0'", busyIndicator(HTML("<div style='color:red;font-size:30px'>Calculation In progress...</div>"), wait = 0)),
-        bsPopover("q10", "Whenever the genomic region or any option is updated, please click Go!!",
-          trigger = "focus")
+        )
         
       ),
       
@@ -361,9 +372,17 @@ shinyUI(
       sidebarPanel(
         textInput("regP", label = h5("Genomic region:",
                                      bsButton("q2", label="", icon=icon("question"), style="info", size="small")),
-                  value = "Zm00001d033673"),
-        
+                  value = ""),
         bsPopover("q2", "A genomic region can be determined by chromosome positions or gene locus. For example, chr7:29506705-29659223 or Zm00001d003489.",
+                  trigger = "focus"),
+        
+        actionButton("submit5", strong("Submit!",
+                                       bsButton("q11", label="", icon=icon("question"), style="info", size="small")
+        ), styleclass = "success"),
+        actionButton("clearPhy", strong("Reset"), styleclass = "warning"),
+        actionButton("PhyExam", strong("Load example"), styleclass = "info"),
+        conditionalPanel(condition="input.submit5 != '0'", busyIndicator(HTML("<div style='color:red;font-size:30px'>Calculation In progress...</div>"), wait = 0)),
+        bsPopover("q11", "Whenever the genomic region or any option is updated, please click Submit!",
                   trigger = "focus"),
         
         HTML("<h4><font color='red'>Plot options</font></h4>"),
@@ -422,14 +441,8 @@ shinyUI(
           condition = "input.phySize",
           numericInput("phyHeight", "Plot height:", value = 700),
           numericInput("phyWidth", "Plot width:", value = 750)
-        ),        
+        )    
 
-        actionButton("submit5", strong("Go!",
-                                       bsButton("q11", label="", icon=icon("question"), style="info", size="small")
-        ), styleclass = "success"),
-        conditionalPanel(condition="input.submit5 != '0'", busyIndicator(HTML("<div style='color:red;font-size:30px'>Calculation In progress...</div>"), wait = 0)),
-        bsPopover("q11", "Whenever the genomic region or any option is updated, please click Go!",
-                  trigger = "focus")
       ),
       
       mainPanel(
@@ -476,76 +489,61 @@ shinyUI(
     tabPanel(
       "Download",
       
-      mainPanel(
-        fluidRow(column(12,
-                        class = "col-md-5",
-                        style = "margin: 1px 1px 1px 1px",
-                        tags$table(id = "inputs-table",
-                                   style = "width: 100%",
-                                   tags$tr(
-                                     tags$td(style = "width: 60%",
-                                             textInput("regBB", label = h5("Genomic region:",
-                                                                          bsButton("q1", label="", icon=icon("question"), style="info", size="small")),
-                                                       value = "chr1:29611303-29639223"),
-                                             
-                                             bsPopover("q1", "A genomic region can be determined by chromosome positions or gene locus. For example, chr7:29506705-29659223 or Zm00001d003489.",
-                                                       trigger = "focus")
-                                     ), #/ column 1
-                                     tags$td(style = "width: 40%; text-align: right",
-                                             div(class = "form-group shiny-input-container",
-                                                 actionButton("submit6", strong("Go!",
-                                                                                bsButton("q12", label="", icon=icon("question"), style="info", size="small")
-                                                 ), width = "90%", styleclass = "success"),
-                                                 bsPopover("q12", "Whenever the genomic region or any option is updated, please click Go!",
-                                                           trigger = "focus")
-                                             )
-                                     ) #/ column 2
-                                   ) #/ tr
-                        ) #/ table
-        )),
+      sidebarPanel(
+        textInput("regBB", label = h5("Genomic region:",
+                                      bsButton("q1", label="", icon=icon("question"), style="info", size="small")),
+                  value = ""),
         
-        fluidRow(
-          column(7,
-                 p(h4("Select maize lines:",
-                           bsButton("qdl2", label="", icon=icon("question"), style="info", size="small"))),
-                 bsPopover("qdl2", "Only the chosen maize lines will be used.",
-                           trigger = "focus"),
-                 
-                 chooserInput("mychooserD", "Available frobs", "Selected frobs",
-                              c(), all.acc.cho, size = 10, multiple = TRUE
-                 )),
-          
-          column(5,
-                 tags$div(align = 'left',
-                          class = 'multicol', style = "width: 100%",
-                          checkboxGroupInput("down_mut_group", h4("Mutation types:",
-                                                                  bsButton("qdl1", label="", icon=icon("question"), style="info", size="small")),
-                                             choices = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
-                                                         "Intron", "Upstream", "Downstream", "Intergenic",
-                                                         "five_prime_UTR","three_prime_UTR",
-                                                         "Non_synonymous_start","Non_synonymous_coding",
-                                                         "Splice_site_acceptor","Splice_site_donor",
-                                                         "Synonymous_stop","Synonymous_coding"
-                                             ),
-                                             selected = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
-                                                          "Intron", "Upstream", "Downstream", "Intergenic",
-                                                          "five_prime_UTR","three_prime_UTR",
-                                                          "Non_synonymous_start","Non_synonymous_coding",
-                                                          "Splice_site_acceptor","Splice_site_donor",
-                                                          "Synonymous_stop","Synonymous_coding"
-                                             )),
-                          bsPopover("qdl1", "Only SNPs with selected mutation effects will be used.",
-                                    trigger = "focus")
-          ))
+        bsPopover("q1", "A genomic region can be determined by chromosome positions or gene locus. For example, chr7:29506705-29659223 or Zm00001d003489.",
+                  trigger = "focus"),
+        
+        actionButton("submit6", strong("Submit!",
+                                       bsButton("q12", label="", icon=icon("question"), style="info", size="small")
+        ), width = "90%", styleclass = "success"),
+        actionButton("clearBDo", strong("Reset"), styleclass = "warning"),
+        actionButton("BDoExam", strong("Load example"), styleclass = "info"),
+        conditionalPanel(condition="input.submit6 != '0'", busyIndicator(HTML("<div style='color:red;font-size:30px'>Calculation In progress...</div>"), wait = 0)),
+        bsPopover("q12", "Whenever the genomic region or any option is updated, please click Submit!",
+                  trigger = "focus"),
+        
+        p(h4("Select maize lines:",
+             bsButton("qdl2", label="", icon=icon("question"), style="info", size="small"))),
+        bsPopover("qdl2", "Only the chosen maize lines will be used.",
+                  trigger = "focus"),
+        
+        chooserInput("mychooserD", "Available frobs", "Selected frobs",
+                     c(), all.acc.cho, size = 10, multiple = TRUE
         ),
         
-        br(),
-        
+        tags$div(align = 'left',
+                 class = 'multicol', style = "width: 100%",
+                 checkboxGroupInput("down_mut_group", h4("Mutation types:",
+                                                         bsButton("qdl1", label="", icon=icon("question"), style="info", size="small")),
+                                    choices = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
+                                                "Intron", "Upstream", "Downstream", "Intergenic",
+                                                "five_prime_UTR","three_prime_UTR",
+                                                "Non_synonymous_start","Non_synonymous_coding",
+                                                "Splice_site_acceptor","Splice_site_donor",
+                                                "Synonymous_stop","Synonymous_coding"
+                                    ),
+                                    selected = c("Stop_lost","Stop_gained","Start_lost","Start_gained",
+                                                 "Intron", "Upstream", "Downstream", "Intergenic",
+                                                 "five_prime_UTR","three_prime_UTR",
+                                                 "Non_synonymous_start","Non_synonymous_coding",
+                                                 "Splice_site_acceptor","Splice_site_donor",
+                                                 "Synonymous_stop","Synonymous_coding"
+                                    )),
+                 bsPopover("qdl1", "Only SNPs with selected mutation effects will be used.",
+                           trigger = "focus")
+        )
+      ),
+      
+      mainPanel(
         downloadButton("bulkdownloadsnpInfo.txt", "Download SNPs information"),
         downloadButton("bulkdownloadsnp.txt", "Download genotype data"),
         downloadButton("bulkdownloadgene.txt", "Download gene annotation"),
         h4("SNPs information in specified genomic region:"),
-        withSpinner(dataTableOutput("mytable2"))
+        dataTableOutput("mytable2")
         
       )
     ),
