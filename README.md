@@ -7,7 +7,7 @@ The genotypes of 1210 maize lines at 35,370,939 SNP sites are stored using Spars
 
 #	Use MaizeSNPDB online
 
-MaizeSNPDB is deployed at <a href="http://150.109.59.144:3838/MaizeSNPDB/" target="_blank">http://150.109.59.144:3838/MaizeSNPDB/</a> for online use.  
+MaizeSNPDB is deployed at <a href="http://venyao.xyz/MaizeSNPDB/" target="_blank">http://venyao.xyz/MaizeSNPDB/</a> for online use.  
 MaizeSNPDB is idle until you activate it by accessing the URL. So it may take some time when you access this URL for the first time. Once it was activated, MaizeSNPDB could be used smoothly and easily.  
 
 *****
