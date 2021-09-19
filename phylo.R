@@ -9,12 +9,16 @@
 # For more info, please check the Phylogenetic menu of the MaizeSNPDB database.
 
 phylo <- function(chr="chr9", start=37800, end=41400, accession=NULL, mutType=NULL, snpSites = NULL) {
+  if (exists("snp.lst")){
+  }else{
+    snp.lst <- read.table("./data/snp.RData.lst", head=T, as.is=T, sep="\t")
+  }
   start <- as.numeric(start)
   end <- as.numeric(end)
-  reg.gr <- IRanges(start, end)
+  reg.gr <- IRanges::IRanges(start, end)
   snp.lst.chr <- snp.lst[snp.lst$chr==chr, ]
-  snp.lst.gr <- IRanges(start=snp.lst.chr$start, end=snp.lst.chr$end)
-  snp.fls <- snp.lst.chr$file[unique(queryHits(findOverlaps(snp.lst.gr, reg.gr)))]
+  snp.lst.gr <- IRanges::IRanges(start=snp.lst.chr$start, end=snp.lst.chr$end)
+  snp.fls <- snp.lst.chr$file[unique(S4Vectors::queryHits(IRanges::findOverlaps(snp.lst.gr, reg.gr)))]
   
   snp.data.lst <- lapply(snp.fls, function(x){
     load(x)
@@ -97,21 +101,21 @@ phylo <- function(chr="chr9", start=37800, end=41400, accession=NULL, mutType=NU
     return(abs(x-y)/2 + as.numeric((x==1)&(y==1))/2)
   }
   
-  dist.mat.nume <- foreach(x=1:ncol(dat.res),.combine=rbind)%dopar%{colSums(dat.res%dis%dat.res[,x],na.rm=TRUE)}
+  dist.mat.nume <- foreach::foreach(x=1:ncol(dat.res),.combine=rbind)%dopar%{colSums(dat.res%dis%dat.res[,x],na.rm=TRUE)}
   dat.res[!is.na(dat.res)] <- 1
-  dist.mat.deno <- foreach(x=1:ncol(dat.res),.combine=rbind)%dopar%{colSums(!is.na(dat.res+dat.res[,x]))}
+  dist.mat.deno <- foreach::foreach(x=1:ncol(dat.res),.combine=rbind)%dopar%{colSums(!is.na(dat.res+dat.res[,x]))}
   
   dist.mat <- dist.mat.nume/dist.mat.deno
   rownames(dist.mat) <- colnames(dist.mat)
   
   ### tree
   dist.mat <- as.dist(dist.mat)
-  tre <- nj(dist.mat)
+  tre <- ape::nj(dist.mat)
   
-  p <- ggtree(tre, layout="circular", branch.length="none", size=0.01) + ggtitle("")
-  p <- p + theme_void()
-  p <- gheatmap(p, acc.tree, offset = 1, width=0.1, colnames = FALSE, color=NULL) +
-    scale_fill_manual(breaks=c("Improved", "Landrace", "unknown", 
+  p <- ggtree::ggtree(tre, layout="circular", branch.length="none", size=0.01) + ggplot2::ggtitle("")
+  p <- p + ggplot2::theme_void()
+  p <- ggtree::gheatmap(p, acc.tree, offset = 1, width=0.1, colnames = FALSE, color=NULL) +
+    ggplot2::scale_fill_manual(breaks=c("Improved", "Landrace", "unknown", 
                                "Parviglumis", "Other"), 
                       values=c("blue", "red", "black", 
                                "purple", "gold"))

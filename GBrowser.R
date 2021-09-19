@@ -9,6 +9,14 @@
 # For more info, please check the Browser menu of the MaizeSNPDB database.
 
 GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, mutType=NULL) {
+  if ( exists("fetchSnp") ){
+  }else{
+    source("fetchSnp.R")
+  }
+  if (exists("gff")){
+  }else{
+    load("./data/gff.AGP.v4.RData")
+  }
   start <- as.numeric(start)
   end <- as.numeric(end)
   
@@ -70,8 +78,8 @@ GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, m
   snpeff.reg$eff <- gsub("SC", "Synonymous_coding", snpeff.reg$eff)
   
   
-  snpeff.reg.1 <- snpeff.reg %>% group_by(id, chr, pos, ref, alt) %>% summarise(info=paste(eff, collapse="<br>"))
-  snpeff.reg.2 <- snpeff.reg %>% group_by(id, chr, pos, ref, alt) %>% summarise(tag=max(tag))
+  snpeff.reg.1 <- snpeff.reg %>% dplyr::group_by(id, chr, pos, ref, alt) %>% dplyr::summarise(info=paste(eff, collapse="<br>"))
+  snpeff.reg.2 <- snpeff.reg %>% dplyr::group_by(id, chr, pos, ref, alt) %>% dplyr::summarise(tag=max(tag))
   snpeff.reg.3 <- merge(snpeff.reg.1, snpeff.reg.2, by=c("id", "chr", "pos", "ref", "alt"))
   snpeff.reg.3$yr <- runif(nrow(snpeff.reg.3), min=-0.9, max=1.1)
   eff.tags <- c("Intergenic", "Intron", "Synonymous_coding","Synonymous_stop",
@@ -86,7 +94,7 @@ GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, m
     snpeff.reg.3 <- snpeff.reg.3[snpeff.reg.3$tag %in% mutType, , drop=FALSE]
   }
   
-  p1 <- ggplot(data=snpeff.reg.3) + geom_point(aes(x=pos, y=yr, color=tag, text=info, fill=tag), size=0.8, pch=25)
+  p1 <- ggplot2::ggplot(data=snpeff.reg.3) + ggplot2::geom_point(ggplot2::aes(x=pos, y=yr, color=tag, text=info, fill=tag), size=0.8, pch=25)
   
   
   gff$id <- gsub(":.+", "", gff$id)
@@ -96,11 +104,11 @@ GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, m
   
   gff.reg$anno <- paste(gff.reg$id, gff.reg$anno, sep=" <br> ")
   
-  gff.reg.mrna.ir <- IRanges(gff.reg.mrna$start, gff.reg.mrna$end)
-  gff.reg.mrna.op <- findOverlaps(gff.reg.mrna.ir, reduce(gff.reg.mrna.ir))
-  gff.reg.mrna$grp <- subjectHits(gff.reg.mrna.op)
+  gff.reg.mrna.ir <- IRanges::IRanges(gff.reg.mrna$start, gff.reg.mrna$end)
+  gff.reg.mrna.op <- IRanges::findOverlaps(gff.reg.mrna.ir, IRanges::reduce(gff.reg.mrna.ir))
+  gff.reg.mrna$grp <- S4Vectors::subjectHits(gff.reg.mrna.op)
   
-  gff.reg.mrna.1 <- gff.reg.mrna %>% group_by(grp) %>% mutate(y=row_number())
+  gff.reg.mrna.1 <- gff.reg.mrna %>% dplyr::group_by(grp) %>% dplyr::mutate(y = dplyr::row_number())
   
   gff.reg <- merge(gff.reg, gff.reg.mrna.1[, c("id", "y")], by="id")
   
@@ -127,7 +135,7 @@ GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, m
   })
   plot.nm <- do.call(rbind, plot.nm.lst)
   if (!is.null(plot.nm) && nrow(plot.nm)>0) {
-    p1 <- p1 + geom_rect(aes(xmin=start, xmax=end, ymin=ymin, ymax=ymax), 
+    p1 <- p1 + ggplot2::geom_rect(ggplot2::aes(xmin=start, xmax=end, ymin=ymin, ymax=ymax), 
                          color="grey30", fill="grey30", data=plot.nm)
   }
   
@@ -144,7 +152,7 @@ GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, m
   })
   plot.mrna <- do.call(rbind, plot.mrna.lst)
   if (!is.null(plot.mrna) && nrow(plot.mrna)>0) {
-    p1 <- p1 + geom_rect(aes(xmin=start, xmax=end, ymin=y+0.118, ymax=y+0.122), 
+    p1 <- p1 + ggplot2::geom_rect(ggplot2::aes(xmin=start, xmax=end, ymin=y+0.118, ymax=y+0.122), 
                          color="grey30", fill="grey30", data=plot.mrna)
   }
   
@@ -192,24 +200,24 @@ GBrowser <- function(chr="chr7", start=29506705, end=29659223, accession=NULL, m
   })
   plot.tail <- do.call(rbind, plot.tail.lst)
   if (!is.null(plot.tail) && nrow(plot.tail)>0) {
-    p1 <- p1 + geom_polygon(aes(x=xx, y=yy, group=id), color="grey30", fill="grey30", 
+    p1 <- p1 + ggplot2::geom_polygon(ggplot2::aes(x=xx, y=yy, group=id), color="grey30", fill="grey30", 
                             data=plot.tail)
   }
   
-  p1 <- p1 + scale_y_continuous("", breaks=NULL)
-  p1 <- p1 + theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank()) + 
-    theme(panel.background=element_rect(fill="white",colour="white"))
-  p1 <- p1 + xlab("Chromosome position")
-  p1 <- p1 + guides(color=guide_legend(title=NULL))
-  p1 <- p1 + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-                   axis.line.y = element_blank())
-  p1 <- p1 + guides(fill=FALSE)
+  p1 <- p1 + ggplot2::scale_y_continuous("", breaks=NULL)
+  p1 <- p1 + ggplot2::theme(panel.grid.major=ggplot2::element_blank(),panel.grid.minor=ggplot2::element_blank()) + 
+    ggplot2::theme(panel.background=ggplot2::element_rect(fill="white",colour="white"))
+  p1 <- p1 + ggplot2::xlab("Chromosome position")
+  p1 <- p1 + ggplot2::guides(color=ggplot2::guide_legend(title=NULL))
+  p1 <- p1 + ggplot2::theme(axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank(),
+                   axis.line.y = ggplot2::element_blank())
+  p1 <- p1 + ggplot2::guides(fill=FALSE)
   
-  p3 <- p1 + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-                   axis.line.y = element_blank())
-  p3 <- ggplotly(p3, tooltip = c("pos", "info"))
+  p3 <- p1 + ggplot2::theme(axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank(),
+                   axis.line.y = ggplot2::element_blank())
+  p3 <- plotly::ggplotly(p3, tooltip = c("pos", "info"))
   
-  p3 <- p3 %>% layout(
+  p3 <- p3 %>% plotly::layout(
     title = "",
     xaxis = list(
       rangeselector = list(),

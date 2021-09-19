@@ -6,9 +6,26 @@ shinyServer(function(input, output, session) {
   # GBrowser
   observe({
     if (input$submit1>0) {
+      if ( exists("GBrowser") ){
+      } else {
+        source("GBrowser.R")
+      }
+      
+      if ( exists("anaReg") ){
+      } else {
+        source("anaReg.R")
+      }
       isolate({
         myPos <- anaReg(input$regB)
+        if ( exists("snpInfo") ){
+        } else {
+          source("snpInfo.R")
+        }
         
+        if ( exists("validReg") ){
+        } else {
+          source("validReg.R")
+        }
         if (validReg(myPos)) {
           if (!is.null(myPos)) {
             snp.info <- snpInfo(chr=myPos$chr, start=myPos$start - input$GBUP, end=myPos$end + input$GBDOWN, 
@@ -25,7 +42,7 @@ shinyServer(function(input, output, session) {
             )
           } else {
             GBplot <<- NULL
-            output$gbrowser <- renderPlotly({
+            output$gbrowser <- plotly::renderPlotly({
               GBplot <<- GBrowser(chr=myPos$chr, start=myPos$start - input$GBUP, 
                                   end=myPos$end + input$GBDOWN,
                                   accession = input$mychooserB$selected,
@@ -38,7 +55,7 @@ shinyServer(function(input, output, session) {
               filename <- function() { paste('GBrowser.pdf') },
               content <- function(file) {
                 pdf(file, width = 900/72, height = 300/72)
-                grid.draw(GBplot[[1]])
+                grid::grid.draw(GBplot[[1]])
                 dev.off()
               }, contentType = 'application/pdf')
             
@@ -89,6 +106,19 @@ shinyServer(function(input, output, session) {
   # LDheatmap
   observe({
     if (input$submit2>0) {
+      if ( exists("anaReg") ){
+      } else {
+        source("anaReg.R")
+      }
+      if ( exists("ld.heatmap") ){
+      } else {
+        source("ld.heatmap.R")
+      }
+      
+      if ( exists("fetchSnp") ){
+      } else {
+        source("fetchSnp.R")
+      }
       isolate({
         ld.height <<- input$ldHeight
         ld.width <<- input$ldWidth
@@ -286,6 +316,26 @@ shinyServer(function(input, output, session) {
 	# Diversity
 	observe({
 	  if (input$submit4>0) {
+	    if ( exists("anaReg") ){
+	    } else {
+	      source("anaReg.R")
+	    }
+	    
+	    if ( exists("nucDiv") ){
+	    } else {
+	      source("nucDiv.R")
+	    }
+	    
+	    if ( exists("fetchSnp") ){
+	    } else {
+	      source("fetchSnp.R")
+	    }
+	    
+	    if ( exists("validReg") ){
+	    } else {
+	      source("validReg.R")
+	    }
+	    
 	    isolate({
 	      div.height <<- input$divHeight
 	      div.width <<- input$divWidth
@@ -331,7 +381,7 @@ shinyServer(function(input, output, session) {
 	                                    groups = div.group, step = div.step,
 	                                    numerator = div.numerator, denominator = div.denominator, 
 	                                    mutType = div.mut.group, snpSites = div.snp.site)
-	            grid.draw(grid.arrange(nuc.div.plot[[1]], nuc.div.plot[[2]], ncol=1, heights=c(2.3, 1)))
+	            grid::grid.draw(grid.arrange(nuc.div.plot[[1]], nuc.div.plot[[2]], ncol=1, heights=c(2.3, 1)))
 	          }, height = div.height, width = div.width)
 	          
 	          ## Download PDF file of Diversity
@@ -344,7 +394,7 @@ shinyServer(function(input, output, session) {
 	            filename <- function() { paste('diversity.pdf') },
 	            content <- function(file) {
 	              pdf(file, width = input$divWidth/72, height = input$divHeight/72)
-	              grid.draw(grid.arrange(nuc.div.plot[[1]], nuc.div.plot[[2]], ncol=1, heights=c(2.3, 1)))
+	              grid::grid.draw(grid.arrange(nuc.div.plot[[1]], nuc.div.plot[[2]], ncol=1, heights=c(2.3, 1)))
 	              
 	              dev.off()
 	            }, contentType = 'application/pdf')
@@ -359,7 +409,7 @@ shinyServer(function(input, output, session) {
 	            filename <- function() { paste('diversity.svg') },
 	            content <- function(file) {
 	              svg(file, width = input$divWidth/72, height = input$divHeight/72)
-	              grid.draw(grid.arrange(nuc.div.plot[[1]], nuc.div.plot[[2]], ncol=1, heights=c(2.3, 1)))
+	              grid::grid.draw(grid.arrange(nuc.div.plot[[1]], nuc.div.plot[[2]], ncol=1, heights=c(2.3, 1)))
 	              
 	              dev.off()
 	            }, contentType = 'image/svg')
@@ -409,6 +459,15 @@ shinyServer(function(input, output, session) {
 	# phylogenetics
 	observe({
 	  if (input$submit5>0) {
+	    if ( exists("anaReg") ){
+	    } else {
+	      source("anaReg.R")
+	    }
+	    
+	    if ( exists("phylo") ){
+	    } else {
+	      source("phylo.R")
+	    }
 	    isolate({
 	      phy.height <<- input$phyHeight
 	      phy.width <<- input$phyWidth
@@ -470,7 +529,7 @@ shinyServer(function(input, output, session) {
 	          output$downloadPhylo.nwk <- downloadHandler(
 	            filename <- function() { paste('phylogenetics.nwk') },
 	            content <- function(file) {
-	              write.tree(treNwk, file)
+	              ape::write.tree(treNwk, file)
 	            }, contentType = 'text/plain')
 	        }
 	      } else {
@@ -508,6 +567,10 @@ shinyServer(function(input, output, session) {
 	output$acc.info.txt <- downloadHandler(
 	  filename = function() { "acc.info.txt" },
 	  content = function(file) {
+	    if (exists("acc.info")){
+	    }else{
+	      acc.info <- read.table("./data/all.acc.txt", head=T, as.is=T, sep="\t", quote="")
+	    }
 	    write.table(acc.info, file, sep = "\t", quote=FALSE, row.names = FALSE)
 	}, contentType = 'text/plain')
 	
@@ -526,7 +589,10 @@ shinyServer(function(input, output, session) {
 	      }
 	    })
 	    accession <- unique(unlist(accession))
-	    
+	    if (exists("acc.info")){
+	    }else{
+	      acc.info <- read.table("./data/all.acc.txt", head=T, as.is=T, sep="\t", quote="")
+	    }
 	    write.table(acc.info[acc.info$ID %in% accession, ], 
 	                file, sep = "\t", quote=FALSE, row.names = FALSE)
 	  }, contentType = 'text/plain')
@@ -544,9 +610,12 @@ shinyServer(function(input, output, session) {
 	    }
 	  })
 	  accession <- unique(unlist(accession))
-	  
+	  if (exists("acc.info")){
+	  }else{
+	    acc.info <- read.table("./data/all.acc.txt", head=T, as.is=T, sep="\t", quote="")
+	  }
 	  acc.info[acc.info$ID %in% accession, ]
-	}, options = list(lengthMenu = c(5, 8, 10), pageLength = 5, searching = TRUE, autoWidth = FALSE), escape = FALSE
+	}, options = list(lengthMenu = c(5, 8, 10), pageLength = 10, searching = TRUE, autoWidth = FALSE), escape = FALSE
 	)
 	
 	output$mytable3 = renderDataTable({
@@ -559,6 +628,15 @@ shinyServer(function(input, output, session) {
 	# Bulk download genotypes of seleceted SNPs
 	observe({
 	  if (input$submit6>0) {
+	    if ( exists("anaReg") ){
+	    } else {
+	      source("anaReg.R")
+	    }
+	    
+	    if ( exists("validReg") ){
+	    } else {
+	      source("validReg.R")
+	    }
 	    isolate({
 	      myPos <- anaReg(input$regBB)
 	      
@@ -590,6 +668,10 @@ shinyServer(function(input, output, session) {
 	          output$bulkdownloadgene.txt <- downloadHandler(
 	            filename = function() { "down.gene.info.txt" },
 	            content = function(file) {
+	              if (exists("gff")){
+	              }else{
+	                load("./data/gff.AGP.v4.RData")
+	              }
 	              gene.info <- gff[gff$chr==myPos$chr & gff$start>=myPos$start & gff$end<=myPos$end, ]
 	              write.table(gene.info, file, sep="\t", quote=F, row.names=F)
 	            })

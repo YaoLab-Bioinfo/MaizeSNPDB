@@ -1,5 +1,14 @@
 
 snpInfo <- function(chr="chr7", start=29616705, end=29629223, accession=NULL, mutType=NULL) {
+  
+  if ( exists("fetchSnp") ){
+  }else{
+    source("fetchSnp.R")
+  }
+  if (exists("snp.lst")){
+  }else{
+    snp.lst <- read.table("./data/snp.RData.lst", head=T, as.is=T, sep="\t")
+  }
   snp.info <- fetchSnp(chr=chr, start=start, end=end, 
                        accession = accession, mutType = mutType)
   
@@ -9,10 +18,10 @@ snpInfo <- function(chr="chr7", start=29616705, end=29629223, accession=NULL, mu
   
   start <- as.numeric(start)
   end <- as.numeric(end)
-  reg.gr <- IRanges(start, end)
+  reg.gr <- IRanges::IRanges(start, end)
   snp.lst.chr <- snp.lst[snp.lst$chr==chr, ]
-  snp.lst.gr <- IRanges(start=snp.lst.chr$start, end=snp.lst.chr$end)
-  snp.fls <- snp.lst.chr$file[unique(queryHits(findOverlaps(snp.lst.gr, reg.gr)))]
+  snp.lst.gr <- IRanges::IRanges(start=snp.lst.chr$start, end=snp.lst.chr$end)
+  snp.fls <- snp.lst.chr$file[unique(S4Vectors::queryHits(IRanges::findOverlaps(snp.lst.gr, reg.gr)))]
   snpeff.fls <- gsub("snp", "snpeff", snp.fls)
   snpeff.fls.lst <- lapply(snpeff.fls, function(x){
     load(x)

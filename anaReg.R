@@ -1,6 +1,10 @@
 
 
 anaReg <- function(x=NULL) {
+  if (exists("gene.info")){
+  }else{
+    load("./data/gene.info.RData")
+  }
   x <- gsub("\\s+", "", x)
   if (grepl("chr", x)) {
     myChr <- gsub(":.+", "", x)
